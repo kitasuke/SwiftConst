@@ -18,6 +18,8 @@ public final class StringVisitor: SyntaxVisitor {
     
     public override func visit(_ node: StringLiteralExprSyntax) {
         let value = node.stringLiteral.text
-        dataStore.strings.append(value)
+        let trivia = node.positionAfterSkippingLeadingTrivia
+        let stringLiteral = FileString(value: value, lineNumber: trivia.line, column: trivia.column)
+        dataStore.fileStrings.append(stringLiteral)
     }
 }

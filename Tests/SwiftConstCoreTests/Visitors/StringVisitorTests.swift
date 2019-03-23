@@ -15,6 +15,8 @@ final class StringVisitorTests: XCTestCase {
     func test_stringVisitor() {
         let input = """
 struct A {
+    let bar = "ddd"
+
     func foo() -> String {
         let string = "aaa"
         print("bbb")
@@ -28,15 +30,11 @@ struct A {
         let dataStore: DataStoreType = MockDataStore()
         StringVisitor(dataStore: dataStore).visit(syntax)
         
-        XCTAssertEqual(dataStore.strings, ["\"aaa\"", "\"bbb\"", "\"ccc\""])
-    }
-    
-    private func createSourceFile(from input: String) -> URL {
-        let url = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent(UUID().uuidString)
-            .appendingPathExtension("swift")
-        try! input.write(to: url, atomically: true, encoding: .utf8)
-        
-        return url
+        XCTAssertEqual(dataStore.fileStrings, [
+            .init(value: "\"ddd\"", lineNumber: 2, column: 15),
+            .init(value: "\"aaa\"", lineNumber: 5, column: 22),
+            .init(value: "\"bbb\"", lineNumber: 6, column: 15),
+            .init(value: "\"ccc\"", lineNumber: 7, column: 16)]
+        )
     }
 }
