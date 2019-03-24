@@ -18,9 +18,14 @@ struct A {
     let bar = "ddd"
 
     func foo() -> String {
+        // aaa
         let string = "aaa"
         print("bbb")
         return "ccc"
+
+        let a = ""
+        let b = ""
+        a = b
     }
 }
 """
@@ -32,9 +37,9 @@ struct A {
         
         XCTAssertEqual(dataStore.fileStrings, [
             .init(value: "\"ddd\"", lineNumber: 2, column: 15),
-            .init(value: "\"aaa\"", lineNumber: 5, column: 22),
-            .init(value: "\"bbb\"", lineNumber: 6, column: 15),
-            .init(value: "\"ccc\"", lineNumber: 7, column: 16)]
+            .init(value: "\"aaa\"", lineNumber: 6, column: 22),
+            .init(value: "\"bbb\"", lineNumber: 7, column: 15),
+            .init(value: "\"ccc\"", lineNumber: 8, column: 16)]
         )
     }
 }

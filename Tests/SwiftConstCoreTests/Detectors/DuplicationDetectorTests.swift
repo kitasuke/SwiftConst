@@ -21,6 +21,14 @@ struct A {
         let string = "aaa"
         print("bbb")
         print("ccc")
+
+        let a = ""
+        let b = ""
+        let c = \"\"\"
+\"\"\"
+        let d = \"\"\"
+        \"\"\"
+
         return "bbb"
     }
 }
@@ -32,7 +40,7 @@ struct A {
             .init(value: "\"aaa\"", lineNumber: 2, column: 15),
             .init(value: "\"aaa\"", lineNumber: 5, column: 22),
             .init(value: "\"bbb\"", lineNumber: 6, column: 15),
-            .init(value: "\"bbb\"", lineNumber: 8, column: 16)]
+            .init(value: "\"bbb\"", lineNumber: 16, column: 16)]
         )
     }
 }
