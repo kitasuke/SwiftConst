@@ -19,21 +19,20 @@ struct RunCommand: CommandProtocol {
     
     func run(_ options: RunOptions) -> Result<(), AnyError> {
         
-        let scanner = SourceFileScanner(pathString: options.path)
+        let scanner = SourceFileScanner(pathString: options.path, ignorePaths: options.ignorePaths)
         
         do {
 
-            let strings: [DuplicatedString] = try scanner.files.reduce(into: []) { result, file in
+            let duplicatedStrings: [DuplicatedString] = try scanner.files.reduce(into: []) { result, file in
                 let parser = SourceFileParser(pathString: file.path)
                 let syntax = try parser.parse()
                 let detector = DuplicationDetector(syntax: syntax)
-                let detectedStrings = detector.detect()
-                let duplicatedStrings = detectedStrings.map { DuplicatedString(filePath: file.path, fileString: $0) }
+                let strings = detector.detect().map { DuplicatedString(filePath: file.path, fileString: $0) }
                 
-                result.append(contentsOf: duplicatedStrings)
+                result.append(contentsOf: strings)
             }
 
-            strings.forEach { print($0) }
+            duplicatedStrings.forEach { print($0) }
             return .init(value: ())
         } catch let error {
             return .init(error: AnyError(error))
@@ -46,16 +45,21 @@ struct RunOptions: OptionsProtocol {
     typealias ClientError = AnyError
     
     fileprivate let path: String
-    private init(path: String) {
+    fileprivate let ignorePaths: [String]
+    private init(path: String, ignorePaths: [String]) {
         self.path = path
+        self.ignorePaths = ignorePaths
     }
     
-    private static func create(_ path: String) -> RunOptions {
-        return RunOptions(path: path)
+    private static func create(_ path: String) -> ([String]) -> RunOptions {
+        return { ignorePaths in
+            RunOptions(path: path, ignorePaths: ignorePaths)
+        }
     }
 
     static func evaluate(_ m: CommandMode) -> Result<RunOptions, CommandantError<ClientError>> {
         return create
-            <*> m <| Option(key: "path", defaultValue: "", usage: "path to run SwiftConst")
+            <*> m <| Option(key: "path", defaultValue: "", usage: "path to run")
+            <*> m <| Option(key: "ignore", defaultValue: [""], usage: "paths to ignore")
     }
 }

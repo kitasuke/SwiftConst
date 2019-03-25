@@ -12,18 +12,24 @@ public class SourceFileScanner {
     
     public let files: [File]
     
-    public init(pathString: String) {
+    public init(pathString: String, ignorePaths: [String]) {
+        let allFiles: [File]
         if let file = try? File(path: pathString) {
-            files = [file].filter { $0.isSwiftExtension }
+            allFiles = [file]
         } else if let folder = try? Folder(path: pathString) {
-            files = folder.makeFileSequence(recursive: true, includeHidden: false).filter { $0.isSwiftExtension }
+            allFiles = folder.makeFileSequence(recursive: true, includeHidden: false).map { $0 }
         } else {
-            files = []
+            allFiles = []
+        }
+        
+        files = allFiles.filter { file in
+            return file.isSwiftExtension &&
+                !ignorePaths.contains(where: { file.path.contains($0) })
         }
     }
 }
 
-extension FileSystem.Item {
+private extension FileSystem.Item {
     var isSwiftExtension: Bool {
         return self.extension == "swift"
     }
