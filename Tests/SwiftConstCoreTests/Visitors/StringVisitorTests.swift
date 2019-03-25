@@ -36,10 +36,10 @@ struct A {
         StringVisitor(dataStore: dataStore).visit(syntax)
         
         XCTAssertEqual(dataStore.fileStrings, [
-            .init(value: "\"ddd\"", lineNumber: 2, column: 15),
-            .init(value: "\"aaa\"", lineNumber: 6, column: 22),
-            .init(value: "\"bbb\"", lineNumber: 7, column: 15),
-            .init(value: "\"ccc\"", lineNumber: 8, column: 16)]
+            .init(value: "\"ddd\"", line: 2, column: 15),
+            .init(value: "\"aaa\"", line: 6, column: 22),
+            .init(value: "\"bbb\"", line: 7, column: 15),
+            .init(value: "\"ccc\"", line: 8, column: 16)]
         )
     }
 }

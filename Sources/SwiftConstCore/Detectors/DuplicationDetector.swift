@@ -12,8 +12,8 @@ public struct DuplicationDetector {
     
     let syntax: SourceFileSyntax
     
-    public init(fileURL: URL) throws {
-        self.syntax = try SourceFileParser(pathURL: fileURL).parse()
+    public init(syntax: SourceFileSyntax) {
+        self.syntax = syntax
     }
     
     public func detect() -> [FileString] {

@@ -9,6 +9,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/apple/swift-syntax.git", .exact("0.40200.0")),
         .package(url: "https://github.com/Carthage/Commandant.git", from: "0.15.0"),
+        .package(url: "https://github.com/JohnSundell/Files.git", from: "2.3.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -18,7 +19,7 @@ let package = Package(
             dependencies: ["SwiftConstCore", "Commandant"]),
         .target(
             name: "SwiftConstCore",
-            dependencies: ["SwiftSyntax"]),
+            dependencies: ["SwiftSyntax", "Files"]),
         .testTarget(
             name: "SwiftConstTests",
             dependencies: ["SwiftConst"]),

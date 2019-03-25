@@ -34,13 +34,14 @@ struct A {
 }
 """
         let url = createSourceFile(from: input)
-        let result = try! DuplicationDetector(fileURL: url).detect()
+        let syntax = try! SyntaxTreeParser.parse(url)
+        let result = DuplicationDetector(syntax: syntax).detect()
         
         XCTAssertEqual(result, [
-            .init(value: "\"aaa\"", lineNumber: 2, column: 15),
-            .init(value: "\"aaa\"", lineNumber: 5, column: 22),
-            .init(value: "\"bbb\"", lineNumber: 6, column: 15),
-            .init(value: "\"bbb\"", lineNumber: 16, column: 16)]
+            .init(value: "\"aaa\"", line: 2, column: 15),
+            .init(value: "\"aaa\"", line: 5, column: 22),
+            .init(value: "\"bbb\"", line: 6, column: 15),
+            .init(value: "\"bbb\"", line: 16, column: 16)]
         )
     }
 }

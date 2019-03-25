@@ -19,12 +19,21 @@ struct RunCommand: CommandProtocol {
     
     func run(_ options: RunOptions) -> Result<(), AnyError> {
         
+        let scanner = SourceFileScanner(pathString: options.path)
+        
         do {
-            let pathURL = URL(fileURLWithPath: options.path)
-            let detector = try DuplicationDetector(fileURL: pathURL)
 
-            let strings = detector.detect()
-            print(strings)
+            let strings: [DuplicatedString] = try scanner.files.reduce(into: []) { result, file in
+                let parser = SourceFileParser(pathString: file.path)
+                let syntax = try parser.parse()
+                let detector = DuplicationDetector(syntax: syntax)
+                let detectedStrings = detector.detect()
+                let duplicatedStrings = detectedStrings.map { DuplicatedString(filePath: file.path, fileString: $0) }
+                
+                result.append(contentsOf: duplicatedStrings)
+            }
+
+            strings.forEach { print($0) }
             return .init(value: ())
         } catch let error {
             return .init(error: AnyError(error))
