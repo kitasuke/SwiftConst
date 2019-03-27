@@ -30,14 +30,14 @@ $ swiftconst help
 
 Display general or command-specific help
 
-#### `run --path <file-path> --ignore /path/to/project/Tests/,/path/to/project/Carthage/`
+#### `run --path <path> --ignore <path,path...>`
 
 Display repeated strings
 
 ## Examples
 
 ```terminal
-$swiftconst run --ignore /Users/kitasuke/SwiftConst/Tests
+$ swiftconst run --ignore "/Users/kitasuke/SwiftConst/Tests/,/Users/kitasuke/SwiftConst/Package.swift"
 other occurrence(s) of "error" found in: /Users/kitasuke/SwiftConst/main.swift:7:11
 other occurrence(s) of "help" found in: /Users/kitasuke/SwiftConst/main.swift:18:19
 other occurrence(s) of "error" found in: /Users/kitasuke/SwiftConst/main.swift:19:28
@@ -45,6 +45,8 @@ other occurrence(s) of "help" found in: /Users/kitasuke/SwiftConst/main.swift:21
 ```
 
 ## TODOs
+
+- [ ] Recursive run in subfolders
 
 ## Acknowledgements
 
