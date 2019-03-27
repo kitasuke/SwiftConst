@@ -17,7 +17,8 @@ public class SourceFileScanner {
         if let file = try? File(path: pathString) {
             allFiles = [file]
         } else if let folder = try? Folder(path: pathString) {
-            allFiles = folder.makeFileSequence(recursive: true, includeHidden: false).map { $0 }
+            // TODO: recursive check
+            allFiles = folder.makeFileSequence(recursive: false, includeHidden: false).map { $0 }
         } else {
             allFiles = []
         }
