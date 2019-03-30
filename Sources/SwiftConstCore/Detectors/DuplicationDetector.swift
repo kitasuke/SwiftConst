@@ -18,7 +18,7 @@ public struct DuplicationDetector {
     
     public func detect() -> [FileString] {
         let dataStore = DataStore()
-        StringVisitor(dataStore: dataStore).visit(syntax)
+        syntax.walk(StringVisitor(dataStore: dataStore))
         return filter(dataStore.fileStrings)
     }
     

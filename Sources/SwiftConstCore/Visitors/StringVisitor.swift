@@ -15,17 +15,19 @@ public final class StringVisitor: SyntaxVisitor {
     public init(dataStore: DataStoreType) {
         self.dataStore = dataStore
     }
-    
-    public override func visit(_ node: StringLiteralExprSyntax) {
+
+    public override func visit(_ node: StringLiteralExprSyntax) -> SyntaxVisitorContinueKind {
         let value = node.stringLiteral.text
         
         // ignore empty string from `stringQuote` or `multilineStringQuote`
         guard value != "\"\"", value != "\"\"\"\"\"\"" else {
-            return
+            return .skipChildren
         }
         
         let trivia = node.positionAfterSkippingLeadingTrivia
         let stringLiteral = FileString(value: value, line: trivia.line, column: trivia.column)
         dataStore.fileStrings.append(stringLiteral)
+        
+        return .skipChildren
     }
 }
