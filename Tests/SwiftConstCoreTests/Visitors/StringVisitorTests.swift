@@ -26,9 +26,12 @@ struct A {
         let a = ""
         let b = ""
         a = b
+
+        print("ccc \\(b)")
     }
 }
 """
+
         let url = createSourceFile(from: input)
         let syntax = try! SyntaxTreeParser.parse(url)
         
@@ -36,10 +39,11 @@ struct A {
         syntax.walk(StringVisitor(dataStore: dataStore))
         
         XCTAssertEqual(dataStore.fileStrings, [
-            .init(value: "\"ddd\"", line: 2, column: 15),
-            .init(value: "\"aaa\"", line: 6, column: 22),
-            .init(value: "\"bbb\"", line: 7, column: 15),
-            .init(value: "\"ccc\"", line: 8, column: 16)]
+            .init(value: "ddd", line: 2, column: 15),
+            .init(value: "aaa", line: 6, column: 22),
+            .init(value: "bbb", line: 7, column: 15),
+            .init(value: "ccc", line: 8, column: 16),
+            .init(value: "ccc", line: 14, column: 16)]
         )
     }
 }

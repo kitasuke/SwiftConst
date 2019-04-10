@@ -16,18 +16,30 @@ public final class StringVisitor: SyntaxVisitor {
         self.dataStore = dataStore
     }
 
-    public override func visit(_ node: StringLiteralExprSyntax) -> SyntaxVisitorContinueKind {
-        let value = node.stringLiteral.text
-        
-        // ignore empty string from `stringQuote` or `multilineStringQuote`
-        guard value != "\"\"", value != "\"\"\"\"\"\"" else {
+    public override func visit(_ node: StringSegmentSyntax) -> SyntaxVisitorContinueKind {
+        let value = node.content.text
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else {
             return .skipChildren
         }
-        
-        let trivia = node.positionAfterSkippingLeadingTrivia
+        let trivia = node.position
         let stringLiteral = FileString(value: value, line: trivia.line, column: trivia.column)
         dataStore.fileStrings.append(stringLiteral)
+        return .visitChildren
+    }
+    
+    public override func visit(_ node: StringLiteralExprSyntax) -> SyntaxVisitorContinueKind {
+        // ignore empty string. e.g. "\"foo\"" or "\"\"\"\n   bar\"\"\""
+        // TODO: "\"" is unexpectedly ignored for now
+        let value = node.stringLiteral.text
+            .trimmingCharacters(in: CharacterSet(charactersIn: "\"").union(.whitespacesAndNewlines))
+        guard !value.isEmpty else {
+                return .skipChildren
+        }
         
-        return .skipChildren
+        let trivia = node.position
+        let stringLiteral = FileString(value: value, line: trivia.line, column: trivia.column)
+        dataStore.fileStrings.append(stringLiteral)
+        return .visitChildren
     }
 }
