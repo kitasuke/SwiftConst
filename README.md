@@ -1,6 +1,6 @@
 # swiftconst
 
-[![Swift 4.2](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://swift.org/download/)
+[![Swift 5.0](https://img.shields.io/badge/swift-5.0-orange.svg?style=flat)](https://swift.org/download/)
 [![Build Status](https://app.bitrise.io/app/f45d3e8ffa077288/status.svg?token=1oqaCoE9MuMQrWJnYh1Cjg&branch=master)](https://app.bitrise.io/app/f45d3e8ffa077288)
 [![codecov](https://codecov.io/gh/kitasuke/SwiftConst/branch/master/graph/badge.svg)](https://codecov.io/gh/kitasuke/SwiftConst)
 
@@ -13,8 +13,8 @@ This is highly inspired by [goconst](https://github.com/jgautheron/goconst) and 
 
 ## Requirements
 
-Swift 4.2+  
-Xcode 10+
+Swift 5.0+  
+Xcode 10.2+
 
 ## How to use
 
