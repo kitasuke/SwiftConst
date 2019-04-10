@@ -1,6 +1,9 @@
 # swiftconst
 
 [![Swift 4.2](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://swift.org/download/)
+[![Build Status](https://app.bitrise.io/app/f45d3e8ffa077288/status.svg?token=1oqaCoE9MuMQrWJnYh1Cjg&branch=master)](https://app.bitrise.io/app/f45d3e8ffa077288)
+[![codecov](https://codecov.io/gh/kitasuke/SwiftConst/branch/master/graph/badge.svg)](https://codecov.io/gh/kitasuke/SwiftConst)
+
 
 ## Overview
 
