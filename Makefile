@@ -1,24 +1,16 @@
-.PHONY: build install uninstall clean
+.PHONY: build build_release install clean
 
-USR_LOCAL ?= /usr/local
-
-BIN_DIR = $(USR_LOCAL)/bin
-LIB_DIR = $(USR_LOCAL)/lib
+BIN_DIR = /usr/local/bin
+RELEASE_BUILD_FLAGS= -c release --static-swift-stdlib --disable-sandbox
 
 build:
-	swift build -c release --disable-sandbox
+	@swift build
+build_release:
+	@swift build $(RELEASE_BUILD_FLAGS)
 
-install: build
-	install ".build/release/swiftconst" "$(BIN_DIR)"
-	install ".build/release/libSwiftSyntax.dylib" "$(LIB_DIR)"
-	install_name_tool -change \
-		".build/x86_64-apple-macosx10.10/release/libSwiftSyntax.dylib" \
-		"$(LIB_DIR)/libSwiftSyntax.dylib" \
-		"$(BIN_DIR)/swiftconst"
-
-uninstall:
-	rm -rf "$(BIN_DIR)/swiftconst"
-	rm -rf "$(LIB_DIR)/libSwiftSyntax.dylib"
+install: build_release
+	@install -d "$(BIN_DIR)"
+	@install ".build/release/swiftconst" "$(BIN_DIR)"
 
 clean:
-	rm -rf .build
+	@rm -rf .build
