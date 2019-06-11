@@ -26,7 +26,7 @@ struct RunCommand: CommandProtocol {
             let duplicatedStrings: [DuplicatedString] = try scanner.files.reduce(into: []) { result, file in
                 let parser = SourceFileParser(pathString: file.path)
                 let syntax = try parser.parse()
-                let detector = DuplicationDetector(syntax: syntax)
+                let detector = DuplicationDetector(filePath: file.path ,syntax: syntax)
                 let strings = detector.detect().map { DuplicatedString(filePath: file.path, fileString: $0) }
                 
                 result.append(contentsOf: strings)
