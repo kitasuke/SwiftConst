@@ -33,10 +33,11 @@ struct A {
 """
 
         let url = createSourceFile(from: input)
-        let syntax = try! SyntaxTreeParser.parse(url)
+        let syntax = try! SyntaxParser.parse(url)
         
         let dataStore: DataStoreType = MockDataStore()
-        syntax.walk(StringVisitor(dataStore: dataStore))
+        var visitor = StringVisitor(filePath: "", syntax: syntax, dataStore: dataStore)
+        syntax.walk(&visitor)
         
         XCTAssertEqual(dataStore.fileStrings, [
             .init(value: "ddd", line: 2, column: 15),

@@ -10,15 +10,18 @@ import SwiftSyntax
 
 public struct DuplicationDetector {
     
+    let filePath: String
     let syntax: SourceFileSyntax
     
-    public init(syntax: SourceFileSyntax) {
+    public init(filePath: String, syntax: SourceFileSyntax) {
+        self.filePath = filePath
         self.syntax = syntax
     }
     
     public func detect() -> [FileString] {
         let dataStore = DataStore()
-        syntax.walk(StringVisitor(dataStore: dataStore))
+        var visitor = StringVisitor(filePath: filePath, syntax: syntax, dataStore: dataStore)
+        syntax.walk(&visitor)
         return filter(dataStore.fileStrings)
     }
     
