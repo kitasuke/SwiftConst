@@ -7,7 +7,7 @@ let package = Package(
     name: "SwiftConst",
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/apple/swift-syntax.git", .revision("xcode11-beta1")),
+        .package(url: "https://github.com/kitasuke/swift-syntax.git", .branch("develop")), // use master commit teporally
         .package(url: "https://github.com/Carthage/Commandant.git", from: "0.15.0"),
         .package(url: "https://github.com/JohnSundell/Files.git", from: "3.1.0")
     ],
