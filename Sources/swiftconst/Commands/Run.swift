@@ -19,7 +19,7 @@ struct RunCommand: CommandProtocol {
     
     func run(_ options: RunOptions) -> Result<(), AnyError> {
         
-        let scanner = SourceFileScanner(pathString: options.path, ignorePaths: options.ignorePaths)
+        let scanner = SourceFileScanner(paths: options.paths, ignorePaths: options.ignorePaths)
         
         do {
 
@@ -44,22 +44,22 @@ struct RunOptions: OptionsProtocol {
     
     typealias ClientError = AnyError
     
-    fileprivate let path: String
+    fileprivate let paths: [String]
     fileprivate let ignorePaths: [String]
-    private init(path: String, ignorePaths: [String]) {
-        self.path = path
+    private init(paths: [String], ignorePaths: [String]) {
+        self.paths = paths
         self.ignorePaths = ignorePaths
     }
     
-    private static func create(_ path: String) -> ([String]) -> RunOptions {
+    private static func create(_ paths: [String]) -> ([String]) -> RunOptions {
         return { ignorePaths in
-            RunOptions(path: path, ignorePaths: ignorePaths)
+            RunOptions(paths: paths, ignorePaths: ignorePaths)
         }
     }
 
     static func evaluate(_ m: CommandMode) -> Result<RunOptions, CommandantError<ClientError>> {
         return create
-            <*> m <| Option(key: "path", defaultValue: "", usage: "path to run")
+            <*> m <| Option(key: "paths", defaultValue: [""], usage: "paths to run")
             <*> m <| Option(key: "ignore", defaultValue: [""], usage: "paths to ignore")
     }
 }

@@ -12,21 +12,25 @@ public class SourceFileScanner {
     
     public let files: [File]
     
-    public init(pathString: String, ignorePaths: [String]) {
-        let allFiles: [File]
-        if let file = try? File(path: pathString) {
-            allFiles = [file]
-        } else if let folder = try? Folder(path: pathString) {
-            // TODO: recursive check
-            allFiles = folder.makeFileSequence(recursive: false, includeHidden: false).map { $0 }
-        } else {
-            allFiles = []
+    public init(paths: [String], ignorePaths: [String]) {
+        
+        var allFiles: [File] = []
+        
+        for path in paths {
+            if let file = try? File(path: path) {
+                allFiles.append(file)
+            } else if let folder = try? Folder(path: path) {
+                let filesInFolder = folder.makeFileSequence(recursive: true, includeHidden: false)
+                    .filter { file in
+                        return file.isSwiftExtension &&
+                            !ignorePaths.contains(where: { file.path.contains($0) })
+                    }
+                    .map { $0 }
+                allFiles.append(contentsOf: filesInFolder)
+            }
         }
         
-        files = allFiles.filter { file in
-            return file.isSwiftExtension &&
-                !ignorePaths.contains(where: { file.path.contains($0) })
-        }
+        files = allFiles
     }
 }
 
