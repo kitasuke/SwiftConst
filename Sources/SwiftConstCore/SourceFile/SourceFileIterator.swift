@@ -12,9 +12,9 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
     public let paths: [String]
     public let ignoreHidden: Bool
     public let ignorePaths: [String]
-    var currentDirectory = ""
-    var pathIterator: Array<String>.Iterator
-    var directoryIterator: FileManager.DirectoryEnumerator?
+    private var currentDirectory = ""
+    private var pathIterator: Array<String>.Iterator
+    private var directoryIterator: FileManager.DirectoryEnumerator?
 
     public init(paths: [String], ignoreHidden: Bool = true, ignorePaths: [String] = []) {
         self.paths = paths
@@ -33,13 +33,10 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
                     return nil
                 }
                 
-                var isDirectory: ObjCBool = false
-                if FileManager.default.fileExists(atPath: nextPath, isDirectory: &isDirectory) &&
-                    isDirectory.boolValue {
-                    directoryIterator = FileManager.default.enumerator(atPath: nextPath)
-                    currentDirectory = nextPath
+                if FileManager.default.isDirectory(atPath: nextPath) {
+                    setDirectoryIterator(of: nextPath)
                 } else {
-                    guard isValidPath(nextPath) else {
+                    guard isValidPath(for: nextPath) else {
                         continue
                     }
                     path = nextPath
@@ -53,7 +50,7 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
         var path: String?
         defer {
             if path == nil {
-                directoryIterator = nil
+                setDirectoryIterator(of: path)
             }
         }
         
@@ -63,10 +60,8 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
             }
             
             let filePath = absolutePath(for: pathInDirectory)
-            var isDirectory: ObjCBool = false
-            guard isValidPath(filePath, pathInDirectory: pathInDirectory) &&
-                FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory) &&
-                !isDirectory.boolValue else {
+            guard isValidPath(for: filePath, pathInDirectory: pathInDirectory) &&
+                FileManager.default.isFile(atPath: filePath) else {
                 continue
             }
 
@@ -79,7 +74,7 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
         return [currentDirectory, "/", path].joined()
     }
     
-    private func isValidPath(_ path: String, pathInDirectory: String? = nil) -> Bool {
+    private func isValidPath(for path: String, pathInDirectory: String? = nil) -> Bool {
         // file should be .swift, not file or directory in hidden or ignored folders
         guard path.hasSuffix(".swift") else {
             return false
@@ -91,5 +86,29 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
         } else {
             return true
         }
+    }
+    
+    private mutating func setDirectoryIterator(of path: String?) {
+        if let path = path {
+            directoryIterator = FileManager.default.enumerator(atPath: path)
+            currentDirectory = path
+        } else {
+            directoryIterator = nil
+            currentDirectory = ""
+        }
+    }
+}
+
+extension FileManager {
+    fileprivate func isFile(atPath path: String) -> Bool {
+        var isDirectory: ObjCBool = false
+        return FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) &&
+            !isDirectory.boolValue
+    }
+    
+    fileprivate func isDirectory(atPath path: String) -> Bool {
+        var isDirectory: ObjCBool = false
+        return FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) &&
+            isDirectory.boolValue
     }
 }
