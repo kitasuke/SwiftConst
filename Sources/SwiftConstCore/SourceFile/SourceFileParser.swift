@@ -12,8 +12,8 @@ public class SourceFileParser {
     
     public let pathURL: URL
     
-    public init(pathString: String) {
-        self.pathURL = URL(fileURLWithPath: pathString)
+    public init(path: String) {
+        self.pathURL = URL(fileURLWithPath: path)
     }
     
     public func parse() throws -> SourceFileSyntax {

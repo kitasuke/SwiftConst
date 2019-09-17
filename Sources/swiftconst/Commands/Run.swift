@@ -19,17 +19,21 @@ struct RunCommand: CommandProtocol {
     
     func run(_ options: RunOptions) -> Result<(), AnyError> {
         
-        let scanner = SourceFileScanner(paths: options.paths, ignorePaths: options.ignorePaths)
-        
+        let iterator = SourceFileIterator(
+            paths: options.paths,
+            ignoreHidden: options.ignoreHidden,
+            ignoreTest: options.ignoreTest,
+            ignorePaths: options.ignorePaths
+        )
         do {
 
-            let duplicatedStrings: [DuplicatedString] = try scanner.files.reduce(into: []) { result, file in
-                let parser = SourceFileParser(pathString: file.path)
+            var duplicatedStrings: [DuplicatedString] = []
+            for path in iterator {
+                let parser = SourceFileParser(path: path)
                 let syntax = try parser.parse()
-                let detector = DuplicationDetector(filePath: file.path ,syntax: syntax)
-                let strings = detector.detect().map { DuplicatedString(filePath: file.path, fileString: $0) }
-                
-                result.append(contentsOf: strings)
+                let detector = DuplicationDetector(filePath: path ,syntax: syntax)
+                let strings = detector.detect().map { DuplicatedString(filePath: path, fileString: $0) }
+                duplicatedStrings.append(contentsOf: strings)
             }
 
             duplicatedStrings.forEach { print($0) }
@@ -45,21 +49,36 @@ struct RunOptions: OptionsProtocol {
     typealias ClientError = AnyError
     
     fileprivate let paths: [String]
+    fileprivate let ignoreHidden: Bool
+    fileprivate let ignoreTest: Bool
     fileprivate let ignorePaths: [String]
-    private init(paths: [String], ignorePaths: [String]) {
+    private init(paths: [String], ignoreHidden: Bool, ignoreTest: Bool, ignorePaths: [String]) {
         self.paths = paths
+        self.ignoreHidden = ignoreHidden
+        self.ignoreTest = ignoreTest
         self.ignorePaths = ignorePaths
     }
     
-    private static func create(_ paths: [String]) -> ([String]) -> RunOptions {
-        return { ignorePaths in
-            RunOptions(paths: paths, ignorePaths: ignorePaths)
+    private static func create(_ paths: [String]) -> (Bool) -> (Bool) -> ([String]) -> RunOptions {
+        return { ignoreHidden in
+            return { ignoreTest in
+                return { ignorePaths in
+                    RunOptions(
+                        paths: paths,
+                        ignoreHidden: ignoreHidden,
+                        ignoreTest: ignoreTest,
+                        ignorePaths: ignorePaths
+                    )
+                }
+            }
         }
     }
 
     static func evaluate(_ m: CommandMode) -> Result<RunOptions, CommandantError<ClientError>> {
         return create
             <*> m <| Option(key: "paths", defaultValue: [""], usage: "paths to run")
+            <*> m <| Option(key: "ignoreHidden", defaultValue: true, usage: "flag whether it ignores hidden files")
+            <*> m <| Option(key: "ignoreTest", defaultValue: true, usage: "flag whether it ignores test files")
             <*> m <| Option(key: "ignore", defaultValue: [""], usage: "paths to ignore")
     }
 }
