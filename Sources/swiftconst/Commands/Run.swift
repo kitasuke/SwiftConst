@@ -26,13 +26,13 @@ struct RunCommand: CommandProtocol {
         )
         do {
 
-            let duplicatedStrings: [DuplicatedString] = try iterator.paths.reduce(into: []) { result, path in
-                let parser = SourceFileParser(pathString: path)
+            var duplicatedStrings: [DuplicatedString] = []
+            for path in iterator {
+                let parser = SourceFileParser(path: path)
                 let syntax = try parser.parse()
                 let detector = DuplicationDetector(filePath: path ,syntax: syntax)
                 let strings = detector.detect().map { DuplicatedString(filePath: path, fileString: $0) }
-                
-                result.append(contentsOf: strings)
+                duplicatedStrings.append(contentsOf: strings)
             }
 
             duplicatedStrings.forEach { print($0) }
