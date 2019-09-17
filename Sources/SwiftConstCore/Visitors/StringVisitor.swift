@@ -31,7 +31,8 @@ public struct StringVisitor: SyntaxVisitor {
     public mutating func visit(_ node: StringSegmentSyntax) -> SyntaxVisitorContinueKind {
         let value = node.content.text
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !value.isEmpty else {
+        guard !value.isEmpty,
+            value.count > 3 else {
             return .skipChildren
         }
         
