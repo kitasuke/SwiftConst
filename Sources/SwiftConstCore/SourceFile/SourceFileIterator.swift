@@ -11,16 +11,16 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
     
     public let paths: [String]
     public let ignoreHidden: Bool
-    public let ignoreTests: Bool
+    public let ignoreTest: Bool
     public let ignorePaths: [String]
     private var currentDirectory = ""
     private var pathIterator: Array<String>.Iterator
     private var directoryIterator: FileManager.DirectoryEnumerator?
 
-    public init(paths: [String], ignoreHidden: Bool = true, ignoreTests: Bool = true, ignorePaths: [String] = []) {
+    public init(paths: [String], ignoreHidden: Bool = true, ignoreTest: Bool = true, ignorePaths: [String] = []) {
         self.paths = paths
         self.ignoreHidden = ignoreHidden
-        self.ignoreTests = ignoreTests
+        self.ignoreTest = ignoreTest
         self.ignorePaths = ignorePaths
         self.pathIterator = paths.makeIterator()
     }
@@ -79,7 +79,7 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
     private func isValidPath(for path: String, pathInDirectory: String? = nil) -> Bool {
         // file should be .swift, not file or directory in hidden or ignored folders
         guard path.hasSuffix(".swift"),
-            !(ignoreTests && path.hasSuffix("Tests.swift")) else {
+            !(ignoreTest && path.hasSuffix("Tests.swift")) else {
             return false
         }
         
