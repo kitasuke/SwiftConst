@@ -21,13 +21,10 @@ struct A {
         // aaa
         let string = "aaa"
         print("bbb")
-        return "ccc"
 
         let a = ""
         let b = ""
         a = b
-
-        print("ccc \\(b)")
     }
 }
 """
@@ -43,8 +40,7 @@ struct A {
             .init(value: "ddd", line: 2, column: 16),
             .init(value: "aaa", line: 6, column: 23),
             .init(value: "bbb", line: 7, column: 16),
-            .init(value: "ccc", line: 8, column: 17),
-            .init(value: "ccc", line: 14, column: 16)]
+            ]
         )
     }
 }

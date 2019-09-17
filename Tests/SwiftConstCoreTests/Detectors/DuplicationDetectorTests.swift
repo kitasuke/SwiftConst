@@ -20,15 +20,9 @@ struct A {
     func foo() -> String {
         let string = "aaa"
         print("bbb")
-        print("ccc")
 
         let a = "foo"
         let b = "\\(a)"
-        let d = \"\"\"
-            ddd
-\"\"\"
-
-        print("ccc \\(b) ddd")
 
         return "bbb" + "bar"
     }
@@ -42,11 +36,7 @@ struct A {
             .init(value: "aaa", line: 2, column: 16),
             .init(value: "aaa", line: 5, column: 23),
             .init(value: "bbb", line: 6, column: 16),
-            .init(value: "ccc", line: 7, column: 16),
-            .init(value: "ddd", line: 11, column: 20),
-            .init(value: "ccc", line: 15, column: 16),
-            .init(value: "ddd", line: 15, column: 24),
-            .init(value: "bbb", line: 17, column: 17)]
+            .init(value: "bbb", line: 11, column: 17)]
         )
     }
 }

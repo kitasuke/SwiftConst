@@ -19,6 +19,14 @@ public struct StringVisitor: SyntaxVisitor {
         self.syntax = syntax
         self.dataStore = dataStore
     }
+    
+    // Ignore string interpolated literal because it's too complex to compare
+    public mutating func visit(_ node: StringLiteralExprSyntax) -> SyntaxVisitorContinueKind {
+        guard node.segments.count == 1 else {
+            return .skipChildren
+        }
+        return .visitChildren
+    }
 
     public mutating func visit(_ node: StringSegmentSyntax) -> SyntaxVisitorContinueKind {
         let value = node.content.text
