@@ -15,12 +15,12 @@ final class StringVisitorTests: XCTestCase {
     func test_stringVisitor() {
         let input = """
 struct A {
-    let bar = "ddd"
+    let bar = "dddd"
 
     func foo() -> String {
-        // aaa
-        let string = "aaa"
-        print("bbb")
+        // aaaa
+        let string = "aaaa"
+        print("bbbb")
 
         let a = ""
         let b = ""
@@ -37,9 +37,9 @@ struct A {
         syntax.walk(&visitor)
         
         XCTAssertEqual(dataStore.fileStrings, [
-            .init(value: "ddd", line: 2, column: 16),
-            .init(value: "aaa", line: 6, column: 23),
-            .init(value: "bbb", line: 7, column: 16),
+            .init(value: "dddd", line: 2, column: 16),
+            .init(value: "aaaa", line: 6, column: 23),
+            .init(value: "bbbb", line: 7, column: 16),
             ]
         )
     }

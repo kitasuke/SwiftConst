@@ -15,16 +15,16 @@ final class DuplicationDetectorTests: XCTestCase {
     func test_Detector() {
         let input = """
 struct A {
-    let bar = "aaa"
+    let bar = "aaaa"
 
     func foo() -> String {
-        let string = "aaa"
-        print("bbb")
+        let string = "aaaa"
+        print("bbbb")
 
-        let a = "foo"
+        let a = "foobar"
         let b = "\\(a)"
 
-        return "bbb" + "bar"
+        return "bbbb" + "bar"
     }
 }
 """
@@ -33,10 +33,10 @@ struct A {
         let result = DuplicationDetector(filePath: "", syntax: syntax).detect()
         
         XCTAssertEqual(result, [
-            .init(value: "aaa", line: 2, column: 16),
-            .init(value: "aaa", line: 5, column: 23),
-            .init(value: "bbb", line: 6, column: 16),
-            .init(value: "bbb", line: 11, column: 17)]
+            .init(value: "aaaa", line: 2, column: 16),
+            .init(value: "aaaa", line: 5, column: 23),
+            .init(value: "bbbb", line: 6, column: 16),
+            .init(value: "bbbb", line: 11, column: 17)]
         )
     }
 }
