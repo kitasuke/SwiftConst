@@ -79,7 +79,7 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
     private func isValidPath(for path: String, pathInDirectory: String? = nil) -> Bool {
         // file should be .swift, not file or directory in hidden or ignored folders
         guard path.hasSuffix(".swift"),
-            !(ignoreTest && path.hasSuffix("Tests.swift")) else {
+            !(ignoreTest && path.contains("Tests")) else {
             return false
         }
         
