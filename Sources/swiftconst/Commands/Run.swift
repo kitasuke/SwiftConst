@@ -31,7 +31,7 @@ struct RunCommand: CommandProtocol {
             for path in iterator {
                 let parser = SourceFileParser(path: path)
                 let syntax = try parser.parse()
-                let detector = DuplicationDetector(filePath: path ,syntax: syntax)
+                let detector = DuplicationDetector(filePath: path, ignorePatterns: options.ignorePatterns, syntax: syntax)
                 let strings = detector.detect().map { DuplicatedString(filePath: path, fileString: $0) }
                 duplicatedStrings.append(contentsOf: strings)
             }
@@ -52,23 +52,28 @@ struct RunOptions: OptionsProtocol {
     fileprivate let ignoreHidden: Bool
     fileprivate let ignoreTest: Bool
     fileprivate let ignorePaths: [String]
-    private init(paths: [String], ignoreHidden: Bool, ignoreTest: Bool, ignorePaths: [String]) {
+    fileprivate let ignorePatterns: [String]
+    private init(paths: [String], ignoreHidden: Bool, ignoreTest: Bool, ignorePaths: [String], ignorePatterns: [String]) {
         self.paths = paths
         self.ignoreHidden = ignoreHidden
         self.ignoreTest = ignoreTest
         self.ignorePaths = ignorePaths
+        self.ignorePatterns = ignorePatterns
     }
     
-    private static func create(_ paths: [String]) -> (Bool) -> (Bool) -> ([String]) -> RunOptions {
+    private static func create(_ paths: [String]) -> (Bool) -> (Bool) -> ([String]) -> ([String]) -> RunOptions {
         return { ignoreHidden in
             return { ignoreTest in
                 return { ignorePaths in
-                    RunOptions(
-                        paths: paths,
-                        ignoreHidden: ignoreHidden,
-                        ignoreTest: ignoreTest,
-                        ignorePaths: ignorePaths
-                    )
+                    return { ignorePatterns in
+                        RunOptions(
+                            paths: paths,
+                            ignoreHidden: ignoreHidden,
+                            ignoreTest: ignoreTest,
+                            ignorePaths: ignorePaths,
+                            ignorePatterns: ignorePatterns
+                        )
+                    }
                 }
             }
         }
@@ -79,6 +84,7 @@ struct RunOptions: OptionsProtocol {
             <*> m <| Option(key: "paths", defaultValue: [""], usage: "paths to run")
             <*> m <| Option(key: "ignoreHidden", defaultValue: true, usage: "flag whether it ignores hidden files")
             <*> m <| Option(key: "ignoreTest", defaultValue: true, usage: "flag whether it ignores test files")
-            <*> m <| Option(key: "ignore", defaultValue: [""], usage: "paths to ignore")
+            <*> m <| Option(key: "ignorePaths", defaultValue: [""], usage: "paths to ignore")
+            <*> m <| Option(key: "ignorePatterns", defaultValue: [""], usage: "regular expression patterns to ignore specific string")
     }
 }

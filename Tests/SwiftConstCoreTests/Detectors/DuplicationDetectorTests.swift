@@ -30,7 +30,7 @@ struct A {
 """
         let url = createSourceFile(from: input)
         let syntax = try! SyntaxParser.parse(url)
-        let result = DuplicationDetector(filePath: "", syntax: syntax).detect()
+        let result = DuplicationDetector(filePath: "", ignorePatterns: [], syntax: syntax).detect()
         
         XCTAssertEqual(result, [
             .init(value: "aaaa", line: 2, column: 16),

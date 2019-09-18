@@ -33,7 +33,7 @@ struct A {
         let syntax = try! SyntaxParser.parse(url)
         
         let dataStore: DataStoreType = MockDataStore()
-        var visitor = StringVisitor(filePath: "", syntax: syntax, dataStore: dataStore)
+        var visitor = StringVisitor(filePath: "", ignorePatterns: [], syntax: syntax, dataStore: dataStore)
         syntax.walk(&visitor)
         
         XCTAssertEqual(dataStore.fileStrings, [
