@@ -21,6 +21,8 @@ public struct SwiftConstString {
     }
 }
 
+extension SwiftConstString: Equatable {}
+
 extension SwiftConstString: CustomStringConvertible {
     public var description: String {
         return "other occurrence(s) of \(value) found in: \(filePath):\(line):\(column)"

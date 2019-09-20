@@ -9,5 +9,5 @@ import Foundation
 @testable import SwiftConstCore
 
 final class MockDataStore: DataStoreType {
-    public var fileStrings: [FileString] = []
+    public var strings: [SwiftConstString] = []
 }
