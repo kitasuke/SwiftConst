@@ -11,13 +11,25 @@ import SwiftSyntax
 public struct DuplicationDetector {
     
     let paths: [String]
+    let minimumLength: Int
+    let duplicationThreshold: Int
     let ignoreHidden: Bool
     let ignoreTest: Bool
     let ignorePaths: [String]
     let ignorePatterns: [String]
     
-    public init(paths: [String], ignoreHidden: Bool, ignoreTest: Bool, ignorePaths: [String], ignorePatterns: [String]) {
+    public init(
+        paths: [String],
+        minimumLength: Int,
+        duplicationThreshold: Int,
+        ignoreHidden: Bool,
+        ignoreTest: Bool,
+        ignorePaths: [String],
+        ignorePatterns: [String]
+    ) {
         self.paths = paths
+        self.minimumLength = minimumLength
+        self.duplicationThreshold = duplicationThreshold
         self.ignoreHidden = ignoreHidden
         self.ignoreTest = ignoreTest
         self.ignorePaths = ignorePaths
@@ -38,16 +50,22 @@ public struct DuplicationDetector {
                 let parser = SourceFileParser(filePath: filePath)
                 let syntax = try parser.parse()
                 let dataStore = DataStore()
-                var visitor = StringVisitor(filePath: filePath, ignorePatterns: ignorePatterns, syntax: syntax, dataStore: dataStore)
+                var visitor = StringVisitor(
+                    filePath: filePath,
+                    minimumLength: minimumLength,
+                    ignorePatterns: ignorePatterns,
+                    syntax: syntax,
+                    dataStore: dataStore
+                )
                 syntax.walk(&visitor)
                 return dataStore.strings
             }
-            .filteredDuplicatedStrings()
+            .filteredDuplicatedStrings(with: duplicationThreshold)
     }
 }
 
 extension Array where Element == SwiftConstString {
-    fileprivate func filteredDuplicatedStrings() -> [Element] {
+    fileprivate func filteredDuplicatedStrings(with threshold: Int) -> [Element] {
         let sortedStrings = self.sorted(by: { $0.value < $1.value })
         
         var previousString = ""
@@ -56,6 +74,11 @@ extension Array where Element == SwiftConstString {
             guard previousString != string.value else {
                 duplicatedStrings.append(string)
                 continue
+            }
+            
+            let duplicationCount = duplicatedStrings.filter({ $0.value == previousString }).count
+            if duplicationCount < threshold {
+                duplicatedStrings = duplicatedStrings.dropLast(duplicationCount)
             }
             
             let nextIndex = index + 1

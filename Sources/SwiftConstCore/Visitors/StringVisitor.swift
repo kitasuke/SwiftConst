@@ -11,13 +11,20 @@ import SwiftSyntax
 public struct StringVisitor: SyntaxVisitor {
     
     let filePath: String
+    let minimumLength: Int
     let ignorePatterns: [String]
     let syntax: SourceFileSyntax
     var dataStore: DataStoreType
-    private let stringLengthThreshold = 3
     
-    public init(filePath: String, ignorePatterns: [String], syntax: SourceFileSyntax, dataStore: DataStoreType) {
+    public init(
+        filePath: String,
+        minimumLength: Int,
+        ignorePatterns: [String],
+        syntax: SourceFileSyntax,
+        dataStore: DataStoreType
+    ) {
         self.filePath = filePath
+        self.minimumLength = minimumLength
         self.ignorePatterns = ignorePatterns
         self.syntax = syntax
         self.dataStore = dataStore
@@ -35,7 +42,7 @@ public struct StringVisitor: SyntaxVisitor {
         let value = node.content.text
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !value.isEmpty,
-            value.count > stringLengthThreshold else {
+            value.count >= minimumLength else {
             return .skipChildren
         }
         

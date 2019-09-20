@@ -17,7 +17,12 @@ public struct SourceFilePathIterator: Sequence, IteratorProtocol {
     private var pathIterator: Array<String>.Iterator
     private var directoryIterator: FileManager.DirectoryEnumerator?
 
-    public init(paths: [String], ignoreHidden: Bool = true, ignoreTest: Bool = true, ignorePaths: [String] = []) {
+    public init(
+        paths: [String],
+        ignoreHidden: Bool = true,
+        ignoreTest: Bool = true,
+        ignorePaths: [String] = []
+    ) {
         self.paths = paths
         self.ignoreHidden = ignoreHidden
         self.ignoreTest = ignoreTest
@@ -84,8 +89,9 @@ public struct SourceFilePathIterator: Sequence, IteratorProtocol {
         }
         
         if let pathInDirectory = pathInDirectory {
-            return !(ignoreHidden && pathInDirectory.hasPrefix(".")) &&
-                !ignorePaths.contains(where: { path.hasPrefix($0) })
+            let isValidHidden = ignoreHidden ? !pathInDirectory.hasPrefix(".") : true
+            let isValidPaths = ignorePaths.isEmpty ? true : !ignorePaths.contains(where: { path.hasPrefix($0) })
+            return isValidHidden && isValidPaths
         } else {
             return true
         }
