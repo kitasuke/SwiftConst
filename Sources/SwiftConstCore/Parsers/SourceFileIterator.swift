@@ -1,5 +1,5 @@
 //
-//  SourceFileIterator.swift
+//  SourceFilePathIterator.swift
 //  SwiftConstCore
 //
 //  Created by Yusuke Kita on 9/16/19.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SourceFileIterator: Sequence, IteratorProtocol {
+public struct SourceFilePathIterator: Sequence, IteratorProtocol {
     
     public let paths: [String]
     public let ignoreHidden: Bool

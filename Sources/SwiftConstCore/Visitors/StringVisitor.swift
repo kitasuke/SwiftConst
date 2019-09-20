@@ -14,6 +14,7 @@ public struct StringVisitor: SyntaxVisitor {
     let ignorePatterns: [String]
     let syntax: SourceFileSyntax
     var dataStore: DataStoreType
+    private let stringLengthThreshold = 3
     
     public init(filePath: String, ignorePatterns: [String], syntax: SourceFileSyntax, dataStore: DataStoreType) {
         self.filePath = filePath
@@ -34,7 +35,7 @@ public struct StringVisitor: SyntaxVisitor {
         let value = node.content.text
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !value.isEmpty,
-            value.count > 3 else {
+            value.count > stringLengthThreshold else {
             return .skipChildren
         }
         
@@ -49,9 +50,19 @@ public struct StringVisitor: SyntaxVisitor {
         } catch let error {
             assertionFailure(error.localizedDescription)
         }
-        let sourceRange = node.sourceRange(converter: SourceLocationConverter(file: filePath, tree: syntax))
-        let stringLiteral = FileString(value: value, line: sourceRange.start.line ?? 0, column: sourceRange.start.column ?? 0)
-        dataStore.fileStrings.append(stringLiteral)
+        let sourceRange = node.sourceRange(
+            converter: SourceLocationConverter(
+                file: filePath,
+                tree: syntax
+            )
+        )
+        let string = SwiftConstString(
+            filePath: filePath,
+            value: value,
+            line: sourceRange.start.line ?? 0,
+            column: sourceRange.start.column ?? 0
+        )
+        dataStore.strings.append(string)
         
         return .skipChildren
     }
