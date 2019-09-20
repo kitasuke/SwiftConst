@@ -66,32 +66,31 @@ public struct DuplicationDetector {
 
 extension Array where Element == SwiftConstString {
     fileprivate func filteredDuplicatedStrings(with threshold: Int) -> [Element] {
-        let sortedStrings = self.sorted(by: { $0.value < $1.value })
         
+        let sortedStrings = self.sorted(by: { $0.value < $1.value })
+
         var previousString = ""
-        var duplicatedStrings: [SwiftConstString] = []
-        for (index, string) in sortedStrings.enumerated() {
-            guard previousString != string.value else {
+        var duplicatedStrings: [Element] = []
+        for string in sortedStrings {
+            // if there is already same string in duplicatedStrings, append it immidiately
+            guard !duplicatedStrings.contains(where: { $0.value == string.value }) else {
                 duplicatedStrings.append(string)
                 continue
             }
             
-            let duplicationCount = duplicatedStrings.filter({ $0.value == previousString }).count
-            if duplicationCount < threshold {
-                duplicatedStrings = duplicatedStrings.dropLast(duplicationCount)
+            // if there is no same string in the array, but same string from previous one,
+            // that means duplication count was less than threshold, so let's skip
+            guard string.value != previousString else {
+                continue
             }
             
-            let nextIndex = index + 1
-            guard nextIndex < sortedStrings.count - 1 else {
-                break
-            }
-                        
-            if string.value == sortedStrings[nextIndex].value {
+            // check if duplication count is eaqual or greater than threshold
+            let duplicationCount = sortedStrings.filter { $0.value == string.value }.count
+            if duplicationCount >= threshold {
                 duplicatedStrings.append(string)
             }
             previousString = string.value
         }
-        
         return duplicatedStrings
     }
 }
