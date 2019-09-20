@@ -19,22 +19,18 @@ struct RunCommand: CommandProtocol {
     
     func run(_ options: RunOptions) -> Result<(), AnyError> {
         
-        let iterator = SourceFileIterator(
-            paths: options.paths,
-            ignoreHidden: options.ignoreHidden,
-            ignoreTest: options.ignoreTest,
-            ignorePaths: options.ignorePaths
-        )
         do {
 
-            var duplicatedStrings: [DuplicatedString] = []
-            for path in iterator {
-                let parser = SourceFileParser(path: path)
-                let syntax = try parser.parse()
-                let detector = DuplicationDetector(filePath: path ,syntax: syntax)
-                let strings = detector.detect().map { DuplicatedString(filePath: path, fileString: $0) }
-                duplicatedStrings.append(contentsOf: strings)
-            }
+            let detector = DuplicationDetector(
+                paths: options.paths,
+                minimumLength: options.minimumLength,
+                duplicationThreshold: options.duplicationThreshold,
+                ignoreHidden: options.ignoreHidden,
+                ignoreTest: options.ignoreTest,
+                ignorePaths: options.ignorePaths,
+                ignorePatterns: options.ignorePatterns
+            )
+            let duplicatedStrings = try detector.detect()
 
             duplicatedStrings.forEach { print($0) }
             return .init(value: ())
@@ -49,26 +45,49 @@ struct RunOptions: OptionsProtocol {
     typealias ClientError = AnyError
     
     fileprivate let paths: [String]
+    fileprivate let minimumLength: Int
+    fileprivate let duplicationThreshold: Int
     fileprivate let ignoreHidden: Bool
     fileprivate let ignoreTest: Bool
     fileprivate let ignorePaths: [String]
-    private init(paths: [String], ignoreHidden: Bool, ignoreTest: Bool, ignorePaths: [String]) {
+    fileprivate let ignorePatterns: [String]
+    private init(
+        paths: [String],
+        minimumLength: Int,
+        duplicationThreshold: Int,
+        ignoreHidden: Bool,
+        ignoreTest: Bool,
+        ignorePaths: [String],
+        ignorePatterns: [String]
+    ) {
         self.paths = paths
+        self.minimumLength = minimumLength
+        self.duplicationThreshold = duplicationThreshold
         self.ignoreHidden = ignoreHidden
         self.ignoreTest = ignoreTest
         self.ignorePaths = ignorePaths
+        self.ignorePatterns = ignorePatterns
     }
     
-    private static func create(_ paths: [String]) -> (Bool) -> (Bool) -> ([String]) -> RunOptions {
-        return { ignoreHidden in
-            return { ignoreTest in
-                return { ignorePaths in
-                    RunOptions(
-                        paths: paths,
-                        ignoreHidden: ignoreHidden,
-                        ignoreTest: ignoreTest,
-                        ignorePaths: ignorePaths
-                    )
+    private static func create(_ paths: [String]) -> (Int) -> (Int) -> (Bool) -> (Bool) -> ([String]) -> ([String]) -> RunOptions {
+        return { minimumLength in
+            return { duplicationThreshold in
+                return { ignoreHidden in
+                    return { ignoreTest in
+                        return { ignorePaths in
+                            return { ignorePatterns in
+                                RunOptions(
+                                    paths: paths,
+                                    minimumLength: minimumLength,
+                                    duplicationThreshold: duplicationThreshold,
+                                    ignoreHidden: ignoreHidden,
+                                    ignoreTest: ignoreTest,
+                                    ignorePaths: ignorePaths,
+                                    ignorePatterns: ignorePatterns
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -76,9 +95,12 @@ struct RunOptions: OptionsProtocol {
 
     static func evaluate(_ m: CommandMode) -> Result<RunOptions, CommandantError<ClientError>> {
         return create
-            <*> m <| Option(key: "paths", defaultValue: [""], usage: "paths to run")
+            <*> m <| Option(key: "paths", defaultValue: ["."], usage: "paths to run")
+            <*> m <| Option(key: "minLength", defaultValue: 5, usage: "minimum string length to find")
+            <*> m <| Option(key: "hreshold", defaultValue: 3, usage: "threshold to determine if duplicated")
             <*> m <| Option(key: "ignoreHidden", defaultValue: true, usage: "flag whether it ignores hidden files")
             <*> m <| Option(key: "ignoreTest", defaultValue: true, usage: "flag whether it ignores test files")
-            <*> m <| Option(key: "ignore", defaultValue: [""], usage: "paths to ignore")
+            <*> m <| Option(key: "ignorePaths", defaultValue: [], usage: "paths to ignore")
+            <*> m <| Option(key: "ignorePatterns", defaultValue: [], usage: "regular expression patterns to ignore specific string")
     }
 }

@@ -15,19 +15,19 @@ final class StringVisitorTests: XCTestCase {
     func test_stringVisitor() {
         let input = """
 struct A {
-    let bar = "ddd"
+    let bar = "dddd"
 
     func foo() -> String {
-        // aaa
-        let string = "aaa"
-        print("bbb")
-        return "ccc"
+        // aaaa
+        let string = "aaaa"
+        print("bbbb")
 
         let a = ""
         let b = ""
         a = b
 
-        print("ccc \\(b)")
+        let b = "\\(aaaa)"
+        print("eeee")
     }
 }
 """
@@ -36,15 +36,16 @@ struct A {
         let syntax = try! SyntaxParser.parse(url)
         
         let dataStore: DataStoreType = MockDataStore()
-        var visitor = StringVisitor(filePath: "", syntax: syntax, dataStore: dataStore)
+        var visitor = StringVisitor(filePath: "foo", minimumLength: 3, ignorePatterns: ["e{4}"], syntax: syntax, dataStore: dataStore)
         syntax.walk(&visitor)
         
-        XCTAssertEqual(dataStore.fileStrings, [
-            .init(value: "ddd", line: 2, column: 16),
-            .init(value: "aaa", line: 6, column: 23),
-            .init(value: "bbb", line: 7, column: 16),
-            .init(value: "ccc", line: 8, column: 17),
-            .init(value: "ccc", line: 14, column: 16)]
+        XCTAssertEqual(
+            dataStore.strings,
+            [
+                .init(filePath: "foo", value: "dddd", line: 2, column: 16),
+                .init(filePath: "foo", value: "aaaa", line: 6, column: 23),
+                .init(filePath: "foo", value: "bbbb", line: 7, column: 16),
+            ]
         )
     }
 }

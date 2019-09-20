@@ -8,11 +8,11 @@
 import Foundation
 
 public protocol DataStoreType {
-    var fileStrings: [FileString] { get set }
+    var strings: [SwiftConstString] { get set }
 }
 
 public final class DataStore: DataStoreType {
-    public var fileStrings: [FileString] = []
+    public var strings: [SwiftConstString] = []
     
     public init() {}
 }

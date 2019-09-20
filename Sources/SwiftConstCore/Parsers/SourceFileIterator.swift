@@ -1,5 +1,5 @@
 //
-//  SourceFileIterator.swift
+//  SourceFilePathIterator.swift
 //  SwiftConstCore
 //
 //  Created by Yusuke Kita on 9/16/19.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SourceFileIterator: Sequence, IteratorProtocol {
+public struct SourceFilePathIterator: Sequence, IteratorProtocol {
     
     public let paths: [String]
     public let ignoreHidden: Bool
@@ -17,7 +17,12 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
     private var pathIterator: Array<String>.Iterator
     private var directoryIterator: FileManager.DirectoryEnumerator?
 
-    public init(paths: [String], ignoreHidden: Bool = true, ignoreTest: Bool = true, ignorePaths: [String] = []) {
+    public init(
+        paths: [String],
+        ignoreHidden: Bool = true,
+        ignoreTest: Bool = true,
+        ignorePaths: [String] = []
+    ) {
         self.paths = paths
         self.ignoreHidden = ignoreHidden
         self.ignoreTest = ignoreTest
@@ -79,13 +84,14 @@ public struct SourceFileIterator: Sequence, IteratorProtocol {
     private func isValidPath(for path: String, pathInDirectory: String? = nil) -> Bool {
         // file should be .swift, not file or directory in hidden or ignored folders
         guard path.hasSuffix(".swift"),
-            !(ignoreTest && path.hasSuffix("Tests.swift")) else {
+            !(ignoreTest && path.contains("Tests")) else {
             return false
         }
         
         if let pathInDirectory = pathInDirectory {
-            return !(ignoreHidden && pathInDirectory.hasPrefix(".")) &&
-                !ignorePaths.contains(where: { path.hasPrefix($0) })
+            let isValidHidden = ignoreHidden ? !pathInDirectory.hasPrefix(".") : true
+            let isValidPaths = ignorePaths.isEmpty ? true : !ignorePaths.contains(where: { path.hasPrefix($0) })
+            return isValidHidden && isValidPaths
         } else {
             return true
         }
