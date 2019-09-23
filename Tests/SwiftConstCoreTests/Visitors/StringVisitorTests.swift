@@ -15,19 +15,18 @@ final class StringVisitorTests: XCTestCase {
     func test_stringVisitor() {
         let input = """
 struct A {
-    let bar = "dddd"
+    let bar = "ddd"
 
     func foo() -> String {
-        // aaaa
-        let string = "aaaa"
-        print("bbbb")
+        // aaa
+        let string = "aaa"
+        print("bbb")
 
         let a = ""
         let b = ""
         a = b
 
-        let b = "\\(aaaa)"
-        print("eeee")
+        let b = "\\(aaa)"
     }
 }
 """
@@ -35,17 +34,36 @@ struct A {
         let url = createSourceFile(from: input)
         let syntax = try! SyntaxParser.parse(url)
         
-        let dataStore: DataStoreType = MockDataStore()
-        var visitor = StringVisitor(filePath: "foo", minimumLength: 3, ignorePatterns: ["e{4}"], syntax: syntax, dataStore: dataStore)
+        let dataStore = MockDataStore()
+        var visitor = makeStringVisitor(minimumLength: 1, ignorePatterns: [], syntax: syntax, with: dataStore)
         syntax.walk(&visitor)
         
         XCTAssertEqual(
             dataStore.strings,
             [
-                .init(filePath: "foo", value: "dddd", line: 2, column: 16),
-                .init(filePath: "foo", value: "aaaa", line: 6, column: 23),
-                .init(filePath: "foo", value: "bbbb", line: 7, column: 16),
+                makeSwiftConstString(value: "ddd", line: 2, column: 16),
+                makeSwiftConstString(value: "aaa", line: 6, column: 23),
+                makeSwiftConstString(value: "bbb", line: 7, column: 16),
             ]
+        )
+    }
+    
+    private func makeStringVisitor(minimumLength: Int, ignorePatterns: [String], syntax: SourceFileSyntax, with dataStore: MockDataStore) -> StringVisitor {
+        return .init(
+            filePath: "",
+            minimumLength: minimumLength,
+            ignorePatterns: ignorePatterns,
+            syntax: syntax,
+            dataStore: dataStore
+        )
+    }
+    
+    private func makeSwiftConstString(value: String, line: Int, column: Int) -> SwiftConstString {
+        return .init(
+            filePath: "",
+            value: value,
+            line: line,
+            column: column
         )
     }
 }
