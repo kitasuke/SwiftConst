@@ -46,6 +46,29 @@ struct A {
         )
     }
     
+    func test_stringVisitor_defaultIgnorePatterns() {
+        let input = """
+struct A {
+    func foo() {
+        let number = "%02d"
+        print("%.02f")
+        print("%2X")
+        print("%02.2hhx")
+    }
+}
+"""
+
+        let syntax = makeSyntax(from: input)
+        let dataStore = MockDataStore()
+        var visitor = makeStringVisitor(minimumLength: 1, ignorePatterns: [], syntax: syntax, with: dataStore)
+        syntax.walk(&visitor)
+        
+        XCTAssertEqual(
+            dataStore.strings,
+            []
+        )
+    }
+    
     func test_stringVisitor_minLength() {
         let input = """
 struct A {

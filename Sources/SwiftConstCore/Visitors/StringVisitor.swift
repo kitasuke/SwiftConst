@@ -47,7 +47,7 @@ public struct StringVisitor: SyntaxVisitor {
         }
         
         do {
-            let defaultIgnorePatterns = ["%[.0-9]{2}d|f|hhx", "%@"]
+            let defaultIgnorePatterns = ["%[.0-9]{1,4}[d|f|X|hhx]", "%@"]
             let patterns = ignorePatterns.isEmpty ? defaultIgnorePatterns : defaultIgnorePatterns + ignorePatterns
             let range = NSRange(location: 0, length: value.count)
             let regex = try NSRegularExpression(pattern: patterns.joined(separator: "|"))
