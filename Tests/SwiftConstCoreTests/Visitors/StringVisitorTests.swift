@@ -15,7 +15,7 @@ final class StringVisitorTests: XCTestCase {
     func test_stringVisitor() {
         let input = """
 struct A {
-    let bar = "ddd"
+    let bar = "foo"
 
     func foo() -> String {
         // aaa
@@ -39,7 +39,7 @@ struct A {
         XCTAssertEqual(
             dataStore.strings,
             [
-                makeString(value: "ddd", line: 2, column: 16),
+                makeString(value: "foo", line: 2, column: 16),
                 makeString(value: "aaa", line: 6, column: 23),
                 makeString(value: "bbb", line: 7, column: 16),
             ]

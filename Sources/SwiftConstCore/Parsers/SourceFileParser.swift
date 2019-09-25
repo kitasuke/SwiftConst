@@ -13,7 +13,11 @@ public class SourceFileParser {
     public let pathURL: URL
     
     public init(filePath: String) {
-        self.pathURL = URL(fileURLWithPath: filePath)
+        if let url = URL(string: filePath), url.isFileURL {
+            self.pathURL = url
+        } else {
+            self.pathURL = URL(fileURLWithPath: filePath)
+        }
     }
     
     public func parse() throws -> SourceFileSyntax {
