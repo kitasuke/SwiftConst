@@ -29,6 +29,7 @@ public struct DuplicationDetector {
     ) {
         self.paths = paths
         self.minimumLength = minimumLength
+        assert(duplicationThreshold > 1, "threshold should be equal or greater than 2")
         self.duplicationThreshold = duplicationThreshold
         self.ignoreHidden = ignoreHidden
         self.ignoreTest = ignoreTest
