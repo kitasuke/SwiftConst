@@ -97,7 +97,7 @@ struct RunOptions: OptionsProtocol {
         return create
             <*> m <| Option(key: "paths", defaultValue: ["."], usage: "paths to run")
             <*> m <| Option(key: "minLength", defaultValue: 5, usage: "minimum string length to find")
-            <*> m <| Option(key: "hreshold", defaultValue: 3, usage: "threshold to determine if duplicated")
+            <*> m <| Option(key: "threshold", defaultValue: 3, usage: "threshold to determine if duplicated")
             <*> m <| Option(key: "ignoreHidden", defaultValue: true, usage: "flag whether it ignores hidden files")
             <*> m <| Option(key: "ignoreTest", defaultValue: true, usage: "flag whether it ignores test files")
             <*> m <| Option(key: "ignorePaths", defaultValue: [], usage: "paths to ignore")
