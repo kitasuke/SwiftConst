@@ -7,7 +7,6 @@
 
 import Foundation
 import Commandant
-import Result
 
 struct VersionCommand: CommandProtocol {
     
@@ -18,6 +17,6 @@ struct VersionCommand: CommandProtocol {
     
     func run(_ options: Options) -> Result<(), AnyError> {
         print("1.0.0")
-        return .init(value: ())
+        return .success(())
     }
 }

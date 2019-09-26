@@ -7,13 +7,13 @@
 
 import Foundation
 import Commandant
-import Result
 import SwiftConstCore
 
 struct RunCommand: CommandProtocol {
-    
+
     typealias Options = RunOptions
-    
+    typealias ClientError = AnyError
+
     let verb = "run"
     let function = "Display duplicated strings"
     
@@ -33,9 +33,9 @@ struct RunCommand: CommandProtocol {
             let duplicatedStrings = try detector.detect()
 
             duplicatedStrings.forEach { print($0) }
-            return .init(value: ())
+            return .success(())
         } catch let error {
-            return .init(error: AnyError(error))
+            return .failure(AnyError(error))
         }
     }
 }

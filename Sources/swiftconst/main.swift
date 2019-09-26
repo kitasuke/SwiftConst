@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Result
 import Commandant
 
 let registry = CommandRegistry<AnyError>()
